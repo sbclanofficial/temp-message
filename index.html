@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hrvk4 - Temp Message</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #4b6cb7, #182848);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: #cfd8dc;
+    }
+
+    main {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      resize: none;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 1rem;
+      background-color: #00c6ff;
+      background-image: linear-gradient(to right, #0072ff, #00c6ff);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-image: linear-gradient(to right, #005bea, #00c6ff);
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      text-align: center;
+      word-wrap: break-word;
+    }
+
+    #result a {
+      color: #80d8ff;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    footer {
+      color: #ccc;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🕵️‍♂️ Temporäre Nachricht</h1>
+    <p>Erstelle eine selbstzerstörende Nachricht – einmal ansehen, dann ist sie weg.</p>
+    <p>Wir Speichern keine IP Adressen oder Nachrichten! Alles bleibt ANONYM</p>
+  </header>
+
+  <main>
+    <textarea id="message" placeholder="🔐 Deine geheime Nachricht..."></textarea>
+    <button onclick="createMessage()">📨 Nachricht erstellen</button>
+    <div id="result"></div>
+  </main>
+
+  <footer>
+    &copy; 2025 TempMessage – Deine Nachrichten bleiben anonym
+  </footer>
+
+  <script>
+    async function createMessage() {
+      const message = document.getElementById('message').value.trim();
+      if (!message) {
+        alert("Bitte gib eine Nachricht ein.");
+        return;
+      }
+
+      try {
+        const ipData = await fetch("https://api64.ipify.org?format=json").then(res => res.json());
+        const response = await fetch('/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, ip: ipData.ip })
+        });
+
+        const data = await response.json();
+        const fullURL = window.location.origin + data.url;
+        document.getElementById('result').innerHTML = `
+          📎 Dein Link zur Nachricht:<br><a href="${fullURL}" target="_blank">${fullURL}</a>
+          <p style="font-size: 0.9rem; color: #ccc;">Teile diesen Link – er funktioniert nur einmal!</p>
+        `;
+        document.getElementById('message').value = '';
+      } catch (err) {
+        console.error(err);
+        alert("Ein Fehler ist aufgetreten. Versuche es später erneut.");
+      }
+    }
+  </script>
+
+</body>
+</html>
